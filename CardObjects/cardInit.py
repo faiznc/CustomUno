@@ -1,0 +1,50 @@
+from card import *
+
+RED_0 = NumberCard(0, "RED", 1)
+RED_1 = NumberCard(1, "RED", 1)
+RED_2 = NumberCard(2, "RED", 1)
+RED_3 = NumberCard(3, "RED", 1)
+RED_4 = NumberCard(4, "RED", 1)
+RED_5 = NumberCard(5, "RED", 1)
+RED_6 = NumberCard(6, "RED", 1)
+RED_7 = NumberCard(7, "RED", 1)
+RED_8 = NumberCard(8, "RED", 1)
+RED_9 = NumberCard(9, "RED", 1)
+
+GRN_0 = NumberCard(0, "GREEN", 1)
+GRN_1 = NumberCard(1, "GREEN", 1)
+GRN_2 = NumberCard(2, "GREEN", 1)
+GRN_3 = NumberCard(3, "GREEN", 1)
+GRN_4 = NumberCard(4, "GREEN", 1)
+GRN_5 = NumberCard(5, "GREEN", 1)
+GRN_6 = NumberCard(6, "GREEN", 1)
+GRN_7 = NumberCard(7, "GREEN", 1)
+GRN_8 = NumberCard(8, "GREEN", 1)
+GRN_9 = NumberCard(9, "GREEN", 1)
+
+BLU_0 = NumberCard(0, "BLUE", 1)
+BLU_1 = NumberCard(1, "BLUE", 1)
+BLU_2 = NumberCard(2, "BLUE", 1)
+BLU_3 = NumberCard(3, "BLUE", 1)
+BLU_4 = NumberCard(4, "BLUE", 1)
+BLU_5 = NumberCard(5, "BLUE", 1)
+BLU_6 = NumberCard(6, "BLUE", 1)
+BLU_7 = NumberCard(7, "BLUE", 1)
+BLU_8 = NumberCard(8, "BLUE", 1)
+BLU_9 = NumberCard(9, "BLUE", 1)
+
+YLW_0 = NumberCard(0, "YELLOW", 1)
+YLW_1 = NumberCard(1, "YELLOW", 1)
+YLW_2 = NumberCard(2, "YELLOW", 1)
+YLW_3 = NumberCard(3, "YELLOW", 1)
+YLW_4 = NumberCard(4, "YELLOW", 1)
+YLW_5 = NumberCard(5, "YELLOW", 1)
+YLW_6 = NumberCard(6, "YELLOW", 1)
+YLW_7 = NumberCard(7, "YELLOW", 1)
+YLW_8 = NumberCard(8, "YELLOW", 1)
+YLW_9 = NumberCard(9, "YELLOW", 1)
+
+number_cards = (RED_0, RED_1, RED_2, RED_3, RED_4, RED_5, RED_6, RED_7, RED_8, RED_9)
+## Its a wrong implementation you know..
+
+
