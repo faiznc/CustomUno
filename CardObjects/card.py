@@ -1,6 +1,14 @@
+import logging
+
+from statics import Action, Color, Wild
+
+card_log = logging.getLogger("card-logger")
+
+
 class Card:
     def __init__(self, priority: int, desc: str = None):
-        self.priority = priority  # Higher = Better
+        # Higher priority = Better
+        self.priority = priority
         self.desc = desc
 
     def __str__(self):
@@ -18,60 +26,73 @@ class NumberCard(Card):
         self.desc = str(number) + "-" + color
 
 
-class PlusCard(Card):
-    def __init__(self, count: int, color: str, priority: int, desc: str = None):
-        super().__init__(priority, desc)
-        self.count = count
-        self.color = color
-        self.desc = "+" + str(count) + "-" + color
-
-
 class ActionCard(Card):
-    def __init__(self, action: str, color: str, priority: int, desc: str = None):
+    def __init__(self, action: str, color: str, priority: int = 5, desc: str = None):
         super().__init__(priority, desc)
         self.action = action
         self.color = color
         self.desc = action + " " + color
 
 
-def generate_single_type_cards(class_name: any, qty: int, **kwargs) -> list:
-    cards: list = []
-    for x in range(qty):
-        item = class_name(**kwargs)
-        cards.append(item)
-    return cards
+class WildCard(Card):
+    def __init__(self, name: str, priority: int, desc: str = None):
+        super().__init__(priority, desc)
+        self.name = name
+        self.desc = name
 
 
-def generate_multi_colored_cards(class_name, qty: int, **kwargs) -> list:
-    cards: list = []
-    for x in range(qty):
-        red_card = class_name(**kwargs, color="RED")
-        blue_card = class_name(**kwargs, color="BLUE")
-        green_card = class_name(**kwargs, color="GREEN")
-        yellow_card = class_name(**kwargs, color="YELLOW")
-        cards.append(red_card)
-        cards.append(blue_card)
-        cards.append(green_card)
-        cards.append(yellow_card)
-    return cards
+def get_color_from_card(raw: str) -> Color:
+    if Color.RED.value in raw:
+        color: Color = Color.RED
+    elif Color.BLUE.value in raw:
+        color: Color = Color.BLUE
+    elif Color.GREEN.value in raw:
+        color: Color = Color.GREEN
+    elif Color.YELLOW.value in raw:
+        color: Color = Color.YELLOW
+    else:
+        raise Exception("No color found in card: " + raw)
+    return color
 
 
-def generate_number_zero() -> list:
-    return generate_multi_colored_cards(NumberCard, qty=1, number=0)
+def get_action_from_card(raw: str) -> Action:
+    action: Action = None
+    action = Action.DRAW_TWO if Action.DRAW_TWO.value in raw else action
+    action = Action.REVERSE if Action.REVERSE.value in raw else action
+    action = Action.SKIP if Action.SKIP.value in raw else action
+    return action
 
 
-def generate_number_cards() -> list:
-    local_pool: list = generate_number_zero()
-    for x in range(9):
-        x = x + 1
-        local_pool += generate_multi_colored_cards(NumberCard, 2, number=x)
-    return local_pool
+def get_wild_from_card(raw: str) -> Wild:
+    if Wild.WILD.value in raw:
+        wild: Wild = Wild.WILD
+    elif Wild.WILD_DRAW_FOUR.value in raw:
+        wild: Wild = Wild.WILD_DRAW_FOUR
+    else:
+        raise Exception("No wild found in card: " + raw)
+    return wild
 
 
-card_pool: list = []
+def construct_card(raw: str) -> any:
+    wild_data = get_wild_from_card(raw)
+    if wild_data:
+        card_log.info("-Wild card-")
+        if wild_data is Wild.WILD:
+            priority: int = 5  # For normal wild
+        else:
+            priority: int = 10  # For draw 4
+        card = WildCard(wild_data.value, priority)
 
-card_pool += generate_number_cards()
-
-
-print(len(card_pool))
-print(card_pool)
+    else:
+        # log.info("-Colored card-")
+        action_data: Action = get_action_from_card(raw)
+        color_data: Color = get_color_from_card(raw)
+        if action_data:
+            card_log.info("-Action card-")
+            card = ActionCard(action_data.value, color_data.value)
+        else:
+            card_log.info("-Number card-")
+            number = int(raw.split(color_data.value)[1])
+            card = NumberCard(number, color_data.value)
+    card_log.info("Final Card: " + str(card))
+    return card
