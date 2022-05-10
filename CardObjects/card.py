@@ -1,5 +1,6 @@
 import logging
 
+from CardObjects.jsonReader import get_full_card_list
 from statics import Action, Color, Wild
 
 card_log = logging.getLogger("card-logger")
@@ -19,6 +20,7 @@ class Card:
 
 
 class NumberCard(Card):
+    """NumberCard is a card that has a number and a color."""
     def __init__(self, number: int, color: str, priority: int = 1, desc: str = None):
         super().__init__(priority, desc)
         self.number = number
@@ -27,18 +29,56 @@ class NumberCard(Card):
 
 
 class ActionCard(Card):
+    """ActionCard is a card that has an action and a color."""
     def __init__(self, action: str, color: str, priority: int = 5, desc: str = None):
         super().__init__(priority, desc)
         self.action = action
         self.color = color
-        self.desc = action + " " + color
+        self.desc = action + "-" + color
 
 
 class WildCard(Card):
+    """WildCard is a card that ignore colors."""
     def __init__(self, name: str, priority: int, desc: str = None):
         super().__init__(priority, desc)
         self.name = name
         self.desc = name
+
+
+class CardInitializer:
+    def __init__(self):
+        self.cards = []
+        self.log = logging.getLogger("card-logger")
+
+    def add_card(self, card: Card):
+        self.log.info("A card added: " + str(card))
+        self.cards.append(card)
+
+    def add_cards(self, cards: list):
+        self.log.info("Cards added.")
+        self.cards.extend(cards)
+
+    def get_cards(self):
+        return self.cards
+
+    def clear_cards(self):
+        self.log.info("Cards cleared.")
+        self.cards.clear()
+
+    def __str__(self):
+        return str(self.cards)
+
+    def get_initialized_cards(self):
+        self.log.info("Cards initialized.")
+        self.cards = self.initiate_cards_from_json()
+        return self.get_cards()
+
+    def initiate_cards_from_json(self, raw_cards: list = get_full_card_list()) -> list:
+        self.clear_cards()
+        for raw in raw_cards:
+            card: Card = construct_card(raw)
+            self.add_card(card)
+        return self.get_cards()
 
 
 def get_color_from_card(raw: str) -> Color:
@@ -51,7 +91,7 @@ def get_color_from_card(raw: str) -> Color:
     elif Color.YELLOW.value in raw:
         color: Color = Color.YELLOW
     else:
-        raise Exception("No color found in card: " + raw)
+        color: Color = None
     return color
 
 
@@ -69,7 +109,7 @@ def get_wild_from_card(raw: str) -> Wild:
     elif Wild.WILD_DRAW_FOUR.value in raw:
         wild: Wild = Wild.WILD_DRAW_FOUR
     else:
-        raise Exception("No wild found in card: " + raw)
+        wild = None
     return wild
 
 
