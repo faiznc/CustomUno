@@ -9,7 +9,11 @@ green_2 = NumberCard(2, "green")
 draw2_red = ActionCard("Draw2", "red")
 draw2_green = ActionCard("Draw2", "green")
 skip_red = ActionCard("Skip", "red")
+skip_green = ActionCard("Skip", "green")
+reverse_red = ActionCard("Reverse", "red")
+reverse_green = ActionCard("Reverse", "green")
 reverse_yellow = ActionCard("Reverse", "yellow")
+
 
 wild_draw4 = WildCard("Draw4", 10)
 wild_normal = WildCard("Wild", 5)
