@@ -1,5 +1,5 @@
 from CardObjects.card import Card, NumberCard, ActionCard, WildCard
-from engine import Rule
+from Game.engine import Rule
 import logging
 
 logging.basicConfig(level=logging.INFO)
