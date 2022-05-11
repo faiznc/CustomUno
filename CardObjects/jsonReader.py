@@ -1,6 +1,9 @@
 import json
+import os
 
-json_file = "card_list.json"
+CURRENT_DIR = os.path.dirname(os.path.abspath(__file__))
+
+json_file = CURRENT_DIR + "\\card_list.json"
 full_deck_json_key = "fullDeck"
 numbers_json_key = "numberCards"
 action_json_key = "actionCards"

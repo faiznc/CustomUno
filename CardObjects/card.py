@@ -1,7 +1,7 @@
 import logging
 
 from CardObjects.jsonReader import get_full_card_list
-from statics import Action, Color, Wild
+from CardObjects.statics import Action, Color, Wild
 
 card_log = logging.getLogger("card-logger")
 
@@ -39,7 +39,7 @@ class ActionCard(Card):
 
 class WildCard(Card):
     """WildCard is a card that ignore colors."""
-    def __init__(self, name: str, priority: int, desc: str = None):
+    def __init__(self, name: str, priority: int = 10, desc: str = None):
         super().__init__(priority, desc)
         self.name = name
         self.desc = name
