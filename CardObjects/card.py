@@ -45,6 +45,14 @@ class WildCard(Card):
         self.desc = name
 
 
+class ColorCard(Card):
+    """ColorCard is a 'virtual' card to save WildCard color selection."""
+    def __init__(self, color: str, priority: int = 1, desc: str = None):
+        super().__init__(priority, desc)
+        self.color = color
+        self.desc = color
+
+
 class CardInitializer:
     def __init__(self):
         self.cards = []

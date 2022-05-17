@@ -120,7 +120,7 @@ def test_draw2_to_draw2_same_color():
 
 def test_draw2_to_draw2_different_color():
     draw2_to_draw2_different_color_args = {"card_1": draw2_red, "card_2": draw2_green}
-    assert Rule("action_x", rule_action_card, draw2_to_draw2_different_color_args).check() is False
+    assert Rule("action_x", rule_action_card, draw2_to_draw2_different_color_args).check() is True
 
 
 def test_draw2_to_reverse_same_color():

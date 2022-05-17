@@ -70,3 +70,14 @@ def rule_wild_card(card_1: Card, card_2: Card) -> bool:
             result = True
 
     return result
+
+
+def rule_color_states(card_1: Card, card_2: Card) -> bool:
+    result: bool = None
+    if type(card_2) is WildCard:  # Ignore if next card is a Wild card
+        result = True
+    elif card_1.color == card_2.color:  # Assert same color on Number and Action cards
+        result = True
+    else:
+        result = False
+    return result

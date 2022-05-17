@@ -5,13 +5,13 @@ from CardObjects.card import Card
 logging.basicConfig(level=logging.INFO)
 eng_log = logging.getLogger("engine-logger")
 
+
 class Rule:
-    def __init__(self, name: str,
+    def __init__(self, name: str = None,
                  function: callable = None,
                  kwargs: dict = None,
                  priority: int = 0,
                  desc: str = "A rule."):
-
         self.name = name
         self.priority = priority
         self.desc = desc
@@ -53,9 +53,22 @@ class Orchestrator:
     def __init__(self, rules: list[Rule]):
         self.rules = rules
         self.main_cards: list[Card] = []
+        self.main_cards = deck.Deck()
+        # print(self.main_cards)
         self.played_cards: list[Card] = []
-        # self.log = logging.getLogger("orchestrator-logger")
+        self.current_card: Card = None
+        self.log = logging.getLogger("orchestrator-logger")
 
+    def set_current_card(self, card: Card):
+        self.current_card = card
+
+    def add_rule(self, rule: Rule):
+        self.rules.append(rule)
+
+    def add_rules(self, rules: list[Rule]):
+        self.rules.extend(rules)
+
+    # Must be executed after card cycle.
     def add_played_card_to_main_cards(self):
         if len(self.main_cards) < 20:
             played = deck.Deck(self.played_cards).shuffle()
@@ -64,26 +77,30 @@ class Orchestrator:
             # To make sure that card that present in main_cards will be played
             self.main_cards = played + temp_main_cards
 
+    def dispose_used_card(self, card: Card):
+        self.played_cards.append(card)
 
-    def propose_cards(self, card: Card) -> bool:
-        pass
+    def check_card_proposal(self, proposed_card: Card) -> bool:
+        rule_args = {"card_1": self.current_card, "card_2": proposed_card}
+        for rule in self.rules:
+            rule.set_kwargs(rule_args)
+            self.log.debug(f"Checking rule {rule.name}")
+            if rule.check() is False:
+                self.log.info("Rule {} is not satisfied.".format(rule.name))
+                return False
+            else:
+                self.log.debug("Rule {} is satisfied.".format(rule.name))
+                pass
+        return True
+
+    def handle_card_proposal(self, proposed_card: Card):
+        if self.check_card_proposal(proposed_card):
+            self.dispose_used_card(proposed_card)
+            self.set_current_card(proposed_card)
+            return True
+        else:
+            return False
+
 
     def propose_combos(self, combos: list[Card]) -> bool:
         pass
-
-
-
-
-# def rule_a(n: int) -> bool:
-#     return n == 1
-#
-#
-# rule_1 = Rule("rule_1", 1, "rule number 1")
-# rule_1.set_function(rule_a)
-# rule_1.set_kwargs({"n": 1})
-#
-# a = rule_1.check()
-# print(a)
-
-
-
