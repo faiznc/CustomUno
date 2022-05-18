@@ -1,15 +1,18 @@
 import logging
 import random
 
-from CardObjects.card import CardInitializer
+from CardObjects.card import CardInitializer, Card
 
+# NOTE: Maybe it's better to move this module to Game folder
 
 class Deck:
     """Main class for a stack of cards.
     Can be used to group all used cards that already played to be inserted again to the main pool."""
 
-    def __init__(self, cards: list = CardInitializer().get_initialized_cards()) -> object:
+    def __init__(self, cards: list = CardInitializer().get_initialized_cards(), is_empty: bool = False) -> object:
         self.cards = cards
+        if is_empty:
+            self.cards = []
         self.shuffle()
         self.log = logging.getLogger("deck-logger")
 
@@ -19,6 +22,12 @@ class Deck:
 
     def clear(self):
         self.cards.clear()
+
+    def add_card(self, card: Card):
+        self.cards.append(card)
+
+    def add_cards(self, cards: list):
+        self.cards.extend(cards)
 
     def draw(self):
         """Draw a card from the deck."""

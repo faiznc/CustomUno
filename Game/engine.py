@@ -19,7 +19,6 @@ class Orchestrator:
         self.rules = rules
         self.main_cards = deck.Deck()
         self.played_cards = deck.Deck(cards=[])
-        self.played_cards = self.played_cards.clear()
         self.current_card: Card = None
         self.log = logging.getLogger("orchestrator-logger")
 
@@ -42,7 +41,7 @@ class Orchestrator:
             self.main_cards = played + temp_main_cards
 
     def dispose_used_card(self, card: Card):
-        self.played_cards.append(card)
+        self.played_cards.add_card(card)
 
     def check_card_proposal(self, proposed_card: Card) -> bool:
         rule_args = {"card_1": self.current_card, "card_2": proposed_card}

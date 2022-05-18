@@ -1,6 +1,7 @@
 import Game.engine
 
 from Game.engine import Orchestrator
+from Game.player import Player
 from Game.rules import Rule
 from Game.rules import *
 
@@ -22,3 +23,18 @@ rule_sets = [rule_actions, rule_numbers, rule_wilds, rule_colors]
 
 controller = Orchestrator(rule_sets)
 controller.set_current_card(red_1)
+
+player_1 = Player(controller, "Player 1")
+player_2 = Player(controller, "Player 2")
+
+player_list = [player_1, player_2]
+
+player_1.add_card(red_1)
+player_1.add_card(red_1)
+player_1.add_card(red_1)
+
+print(player_1.get_current_cards())
+
+# controller.handle_card_proposal(player_1, red_2)
+# a = controller.handle_card_proposal(red_2)
+# print(a)
