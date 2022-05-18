@@ -1,3 +1,4 @@
+import logging
 import random
 
 from CardObjects.card import CardInitializer
@@ -6,21 +7,32 @@ from CardObjects.card import CardInitializer
 class Deck:
     """Main class for a stack of cards.
     Can be used to group all used cards that already played to be inserted again to the main pool."""
-    def __init__(self, cards: list = CardInitializer().get_initialized_cards()):
+
+    def __init__(self, cards: list = CardInitializer().get_initialized_cards()) -> object:
         self.cards = cards
         self.shuffle()
+        self.log = logging.getLogger("deck-logger")
 
     def shuffle(self):
         """Shuffle the deck."""
         random.shuffle(self.cards)
 
+    def clear(self):
+        self.cards.clear()
+
     def draw(self):
         """Draw a card from the deck."""
-        return self.cards.pop()
+        card = self.cards.pop()
+        self.log.info("Card count= " + str(len(self.cards)))
+        return card
 
     def draw_n(self, n: int):
         """Draw n cards from the deck."""
-        return [self.cards.pop() for _ in range(n)]
+        cards = []
+        for i in range(n):
+            cards.append(self.cards.pop())
+        self.log.info("Card count= " + str(len(self.cards)))
+        return cards
 
     def __len__(self):
         return len(self.cards)

@@ -1,5 +1,5 @@
 from CardObjects.card import Card
-from engine import Orchestrator
+from Game.engine import Orchestrator
 
 
 class Player:
@@ -26,4 +26,12 @@ class Player:
         # If orchestrator accepts, return True
         # If orchestrator rejects, return False
         return True
+
+    def ask_new_card(self):
+        """Ask the controller for a new card"""
+        pass
+
+    def declare_uno(self):
+        pass
+
 

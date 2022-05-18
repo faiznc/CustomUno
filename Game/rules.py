@@ -5,6 +5,44 @@ logging.basicConfig(level=logging.INFO)
 rules_log = logging.getLogger("rules-logger")
 
 
+class Rule:
+    def __init__(self, name: str = None,
+                 function: callable = None,
+                 kwargs: dict = None,
+                 priority: int = 0,
+                 desc: str = "A rule."):
+        self.name = name
+        self.priority = priority
+        self.desc = desc
+        self.functions: callable = function
+        self.kwargs: dict = kwargs
+        self.allowed_card_types: list[Card] = []
+
+    def get_priority(self) -> int:
+        return self.priority
+
+    def set_priority(self, priority: int):
+        self.priority = priority
+
+    def set_function(self, function: callable):
+        self.functions = function
+
+    def set_kwargs(self, kwargs: dict):
+        self.kwargs = kwargs
+
+    def check(self) -> bool:
+        """Check if the rule is satisfied. \n
+        Return *True* if the rule is used; \n
+        Return *False* if the rule is not satisfied; \n
+        Return *None* if the rule is not used."""
+        return self.functions(**self.kwargs)
+
+    def allowed_card_types(self) -> list[Card]:
+        return self.allowed_card_types
+
+
+# TODO Combo class. Can also use Rule object to make sure the behavior is correct.
+
 def rule_number_card(card_1: Card, card_2: Card) -> bool:
     result: bool = None
     if type(card_1) is NumberCard:

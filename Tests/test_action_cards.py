@@ -1,5 +1,4 @@
-from Game.engine import Rule
-from Game.rules import rule_action_card
+from Game.rules import rule_action_card, Rule
 from card_objects import *
 
 

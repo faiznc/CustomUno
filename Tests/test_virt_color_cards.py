@@ -1,5 +1,4 @@
-from Game.engine import Rule
-from Game.rules import rule_color_states
+from Game.rules import rule_color_states, Rule
 from card_objects import *
 
 
