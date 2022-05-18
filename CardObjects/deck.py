@@ -43,6 +43,9 @@ class Deck:
         self.log.info("Card count= " + str(len(self.cards)))
         return cards
 
+    def get_cards(self):
+        return self.cards
+
     def __len__(self):
         return len(self.cards)
 
