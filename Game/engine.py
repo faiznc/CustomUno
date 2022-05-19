@@ -1,4 +1,6 @@
 import logging
+import random
+
 from CardObjects import deck
 from CardObjects.card import Card
 from CardObjects.deck import Deck
@@ -10,13 +12,17 @@ eng_log = logging.getLogger("engine-logger")
 
 class Player:
     def __init__(self, orchestrator, name: str = "Player"):
-        self.Orchestrator_instance: Orchestrator = orchestrator
+        self.orchestrator: Orchestrator = orchestrator
         self.card_pool: Deck = Deck(is_empty=True)
         self.name = name
+        self.is_playing_flag = False
         self.log = logging.getLogger("player-logger")
 
+    def set_playing_flag(self, flag: bool):
+        self.is_playing_flag = flag
+
     def remove_card(self, card: Card):
-        self.card_pool.remove(card)
+        self.card_pool.remove_card(card)
 
     def add_card(self, card: Card):
         self.card_pool.add_card(card)
@@ -43,10 +49,97 @@ class Player:
 
     def ask_new_card(self):
         """Ask the controller for a new card"""
-        pass
+        new_card = self.orchestrator.draw_card()
+        self.add_card(new_card)
 
     def declare_uno(self):
         pass
+
+    def play(self):
+        """Play the cards in the card pool"""
+        if not self.is_playing_flag:
+            return
+
+        # Using simple input for now
+        print("Player " + self.name + ":")
+        temp_played_card: Card = self.orchestrator.get_current_card()
+        print("Current card: \n"
+              " ----  " + str(temp_played_card) + "  ----")
+        print("Your cards: " + str(self.get_current_cards()))
+        print("Your turn:")
+        print("1. Play a card")
+        print("2. Ask for a new card")
+        print("3. Declare UNO")
+        print("4. Pass")
+        print("5. Quit")
+        choice = input("Your choice: ")
+        if choice == "1":
+            # Play a card from the card pool
+            # Proposing which card to be played
+            print("Which card do you want to play?")
+            for index in range(self.card_pool.get_size()):
+                print(str(index + 1) + ". " + str(self.card_pool[index]))
+            choice: int = input("Your choice: ")
+            if choice.isdigit():
+                choice = int(choice) - 1
+                if choice > 0 and choice <= self.card_pool.get_size():
+                    card = self.card_pool.get_card_by_index(choice)
+                    if self.propose_card(card):
+                        self.log.info("Current card: " + str(temp_played_card))
+                        self.log.info("Card " + str(card) + " accepted")
+                        self.remove_card(card)
+                        # self.Orchestrator_instance.add_card(card)
+                        # self.Orchestrator_instance.next_player()
+                    else:
+                        self.log.info("Current card: " + str(temp_played_card))
+                        self.log.info("Card " + str(card) + " rejected")
+                        print("Card rejected")
+                else:
+                    print("Invalid choice")
+
+        elif choice == "2":
+            self.ask_new_card()
+        elif choice == "3":
+            self.declare_uno()
+        elif choice == "4":
+            pass
+        elif choice == "5":
+            pass
+        else:
+            print("Invalid choice")
+            self.play()
+
+
+class PlayerDataSync:
+    def __init__(self):
+        self.player_data = {}
+        self.log = logging.getLogger("player-data-sync-logger")
+
+    def set_player_data_by_index_complete(self, player_index: int, player_name: str, card_count: int, instance: Player):
+        self.player_data[player_index] = {
+            'name': player_name,
+            'card_count': card_count,
+            'instance': instance
+        }
+
+    def set_player_data_by_index(self, player_index: int, instance: Player):
+        self.player_data[player_index] = {
+            'name': instance.name,
+            'card_count': len(instance.card_pool),
+            'instance': instance
+        }
+
+    def get_player_data_by_index(self, player_index: int):
+        return self.player_data[player_index]
+
+    def get_all_data(self):
+        return self.player_data
+
+    def get_players(self) -> list[Player]:
+        players = []
+        for player_data in self.player_data.values():
+            players.append(player_data['instance'])
+        return players
 
 
 # My intention are Orchestrator only produce a response
@@ -69,9 +162,14 @@ class Orchestrator:
         self.first_turn_player_index = 0
         self.is_rotation_incremented = False
         self.log = logging.getLogger("orchestrator-logger")
+        self.is_playing = None
+        self.is_first_turn = True
 
     def set_current_card(self, card: Card):
         self.current_card = card
+
+    def get_current_card(self):
+        return self.current_card
 
     def add_rule(self, rule: Rule):
         self.rules.append(rule)
@@ -86,6 +184,17 @@ class Orchestrator:
     def get_players(self) -> list[Player]:
         return self.player_data.get_players()
 
+    def get_player_instance_by_index(self, player_index: int) -> Player:
+        return self.player_data.get_player_data_by_index(player_index)['instance']
+
+    def get_player_name_by_index(self, player_index: int) -> str:
+        return self.player_data.get_player_data_by_index(player_index)['name']
+
+    def set_player_to_play(self, player_index: int):
+        self.first_turn_player_index = player_index
+        self.get_player_instance_by_index(player_index).set_playing_flag(True)
+        self.log.info("Player " + self.get_player_name_by_index(player_index) + " is now playing")
+
     def initialize_cards(self):
         self.log.info("Initializing orchestrator.")
         self.main_cards.add_cards(deck.Deck().cards)
@@ -99,7 +208,6 @@ class Orchestrator:
         # Set current main card
         self.set_current_card(self.draw_card())
         self.log.info("Current card: {}".format(self.current_card))
-        self.log.info("Number of card in reserved deck: {}".format(len(self.main_cards)))
 
     # Must be executed after card cycle.
     def add_played_card_to_main_cards(self):
@@ -152,34 +260,18 @@ class Orchestrator:
     def propose_combos(self, combos: list[Card]) -> bool:
         pass
 
+    def start_game(self):
+        self.initialize_cards()
+        self.is_playing = True
+        self.log.info("Orchestrator started.")
 
-class PlayerDataSync:
-    def __init__(self):
-        self.player_data = {}
-        self.log = logging.getLogger("player-data-sync-logger")
+        # Choose first player
+        self.first_turn_player_index = random.randint(0, len(self.player_data.get_players()) - 1)
+        self.log.info("First player are: {}".format(self.get_player_name_by_index(self.first_turn_player_index)))
 
-    def set_player_data_by_index_complete(self, player_index: int, player_name: str, card_count: int, instance: Player):
-        self.player_data[player_index] = {
-            'name': player_name,
-            'card_count': card_count,
-            'instance': instance
-        }
-
-    def set_player_data_by_index(self, player_index: int, instance: Player):
-        self.player_data[player_index] = {
-            'name': instance.name,
-            'card_count': len(instance.card_pool),
-            'instance': instance
-        }
-
-    def get_player_data_by_index(self, player_index: int):
-        return self.player_data[player_index]
-
-    def get_all_data(self):
-        return self.player_data
-
-    def get_players(self) -> list[Player]:
-        players = []
-        for player_data in self.player_data.values():
-            players.append(player_data['instance'])
-        return players
+        while self.is_playing:
+            self.log.info("Current player: {}".format(self.get_player_name_by_index(self.first_turn_player_index)))
+            self.set_player_to_play(self.first_turn_player_index)
+            self.get_player_instance_by_index(self.first_turn_player_index).play()
+            self.first_turn_player_index = self.get_next_player_index()
+            self.is_first_turn = False

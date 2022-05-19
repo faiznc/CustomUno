@@ -29,8 +29,6 @@ player_2 = Player(controller, "Player 2")
 
 player_list = [player_1, player_2]
 
-
-
 # controller.handle_card_proposal(player_1, red_2)
 # a = controller.handle_card_proposal(red_2)
 # print(a)
@@ -38,17 +36,16 @@ player_list = [player_1, player_2]
 controller.set_players(player_list)
 # print(controller.player_data.get_all_data())
 
-controller.initialize_cards()
-
-
-
+# controller.initialize_cards()
 
 # result = player_1.propose_card(player_1.get_current_cards()[0])
 
 player_1.add_card(red_1)
 
-print(player_1.get_current_cards())
-print(player_2.get_current_cards())
+# print(player_1.get_current_cards())
+# print(player_2.get_current_cards())
 
-result = player_1.propose_card(red_12)
-print(result)
+# result = player_1.propose_card(red_1)
+# print(result)
+
+controller.start_game()

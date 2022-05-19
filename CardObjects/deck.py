@@ -20,8 +20,20 @@ class Deck:
         """Shuffle the deck."""
         random.shuffle(self.cards)
 
+    def get_size(self):
+        return len(self.cards)
+
     def clear(self):
         self.cards.clear()
+
+    def draw_card_by_index(self, index):
+        return self.cards.pop(index)
+
+    def remove_card(self, card: Card):
+        self.cards.remove(card)
+
+    def get_card_by_index(self, index):
+        return self.cards[index]
 
     def add_card(self, card: Card):
         self.cards.append(card)
